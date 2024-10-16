@@ -1,4 +1,4 @@
-package br.com.fiap.testesunitarios.repository;
+package br.com.fiap.api.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doNothing;
@@ -16,21 +16,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import br.com.fiap.testesunitarios.model.Message;
+import br.com.fiap.api.model.Mensagem;
 
 @ExtendWith(MockitoExtension.class)
-public class MessageRepositoryTest {
+public class MensagemRepositoryTest {
     
     // Mocks setup
     @Mock
-    private MessageRepository messageRepository;
+    private MensagemRepository messageRepository;
 
     // Other Methods
-    private Message getMessage() {
-        return Message.builder()
+    private Mensagem getMessage() {
+        return Mensagem.builder()
                 .id(UUID.randomUUID())
-                .username("Marcio")
-                .content("message content")
+                .usuario("Marcio")
+                .conteudo("message content")
                 .build();
     }
 
@@ -38,11 +38,11 @@ public class MessageRepositoryTest {
     @Test
     void shouldSaveMessage() {
         // Arrange
-        Message message = getMessage();
+        Mensagem message = getMessage();
         when(messageRepository.save(message)).thenReturn(message);
         
         // Act
-        Message storedMessage = messageRepository.save(message);
+        Mensagem storedMessage = messageRepository.save(message);
         
         // Assert
         assertThat(storedMessage).isNotNull().isEqualTo(message);
@@ -53,18 +53,18 @@ public class MessageRepositoryTest {
     void shouldFindMessageById() {
         // Arrange
         UUID id = UUID.randomUUID();
-        Message message = getMessage();
+        Mensagem message = getMessage();
         message.setId(id);
         when(messageRepository.findById(id)).thenReturn(Optional.of(message));
 
         // Act
-        Optional<Message> optionalReceivedMessage = messageRepository.findById(id);
+        Optional<Mensagem> optionalReceivedMessage = messageRepository.findById(id);
         
         // Assert
         assertThat(optionalReceivedMessage).isPresent();
         optionalReceivedMessage.ifPresent(receivedMessage -> {
             assertThat(receivedMessage.getId()).isEqualTo(message.getId());
-            assertThat(receivedMessage.getContent()).isEqualTo(message.getContent());
+            assertThat(receivedMessage.getConteudo()).isEqualTo(message.getConteudo());
         });
 
         verify(messageRepository, times(1)).findById(id);
@@ -86,13 +86,13 @@ public class MessageRepositoryTest {
     @Test
     void shouldListMessages() {
         // Arrange
-        Message message1 = getMessage();
-        Message message2 = getMessage();
-        List<Message> messages = Arrays.asList(message1, message2);
+        Mensagem message1 = getMessage();
+        Mensagem message2 = getMessage();
+        List<Mensagem> messages = Arrays.asList(message1, message2);
         when(messageRepository.findAll()).thenReturn(messages);
         
         // Act
-        List<Message> receivedMessages = messageRepository.findAll();
+        List<Mensagem> receivedMessages = messageRepository.findAll();
         
         // Assert
         assertThat(receivedMessages)

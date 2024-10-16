@@ -1,4 +1,4 @@
-package br.com.fiap.testesunitarios.repository;
+package br.com.fiap.api.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Optional;
@@ -8,27 +8,31 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import br.com.fiap.testesunitarios.model.Message;
+import br.com.fiap.api.model.Mensagem;
 import jakarta.transaction.Transactional;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
 @Transactional
-public class MessageRepositoryIT {
+class MensagemRepositoryIT {
     
     @Autowired
-    private MessageRepository messageRepository;
+    private MensagemRepository mensagemRepository;
 
-    private Message getMessage() {
-        return Message.builder()
-                .username("Marcio")
-                .content("message content")
+    private Mensagem getMensagem() {
+        return Mensagem.builder()
+                .usuario("Marcio")
+                .conteudo("message content")
                 .build();
+    }
+
+    private Mensagem saveMessage(Mensagem mensagem) {
+        return mensagemRepository.save(mensagem);
     }
 
     @Test
     void shouldCreateTable() {
-        Long registersCount = messageRepository.count();
+        Long registersCount = mensagemRepository.count();
         assertThat(registersCount).isNotNegative();
     }
 
@@ -36,38 +40,31 @@ public class MessageRepositoryIT {
     void shouldSaveMessage() {
         // Arrange
         UUID id = UUID.randomUUID();
-        Message message = getMessage();
-        message.setId(id);
+        Mensagem mensagem = getMensagem();
+        mensagem.setId(id);
         
         // Act
-        Message receivedMessage = saveMessage(message);
+        Mensagem receivedMessage = saveMessage(mensagem);
 
         // Assert
-        assertThat(receivedMessage).isInstanceOf(Message.class).isNotNull();
-        assertThat(receivedMessage.getContent()).isEqualTo(message.getContent());
-        assertThat(receivedMessage.getUsername()).isEqualTo(message.getUsername());
+        assertThat(receivedMessage).isInstanceOf(Mensagem.class).isNotNull();
+        assertThat(receivedMessage.getConteudo()).isEqualTo(mensagem.getConteudo());
+        assertThat(receivedMessage.getUsuario()).isEqualTo(mensagem.getUsuario());
     }
 
     @Test
     void shouldGetMessageById() {
-        UUID id = UUID.randomUUID();
-        Message message = getMessage();
-        message.setId(id);
-        saveMessage(message);
+        // Arrange
+        UUID id = UUID.fromString("166f0302-2cd6-472b-8e60-616ff3f9b2cf");
 
         // Act
-        Optional<Message> repositoryResponse = messageRepository.findById(id);
+        Optional<Mensagem> repositoryResponse = mensagemRepository.findById(id);
 
         // Assert
         assertThat(repositoryResponse).isPresent();
         repositoryResponse.ifPresent(receivedMessage -> {
             assertThat(receivedMessage.getId()).isEqualTo(id);
-            assertThat(receivedMessage.getContent()).isEqualTo(message.getContent());
         });
-    }
-
-    private Message saveMessage(Message message) {
-        return messageRepository.save(message);
     }
 
     // @Test

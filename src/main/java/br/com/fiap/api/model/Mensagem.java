@@ -1,4 +1,4 @@
-package br.com.fiap.testesunitarios.model;
+package br.com.fiap.api.model;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -19,23 +19,25 @@ import lombok.Builder.Default;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Message {
+public class Mensagem {
 
     @Id
     private UUID id;
 
     @Column(nullable = false)
-    @NotEmpty(message = "User can't be empty.")
-    private String username;
+    @NotEmpty(message = "Username can't be empty.")
+    private String usuario;
 
     @Column(nullable = false)
     @NotEmpty(message = "Content can't be empty.")
-    private String content;
+    private String conteudo;
 
+    @Column(nullable = false)
     @Default
-    private LocalDateTime messageCreationTimestamp = LocalDateTime.now();
+    private LocalDateTime dataCriacao = LocalDateTime.now();
 
+    @Column(nullable = false)
     @Default
-    private int likes = 0;
+    private int gostei = 0;
 
 }
