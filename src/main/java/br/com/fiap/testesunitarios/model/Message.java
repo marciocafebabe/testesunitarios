@@ -7,6 +7,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotEmpty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,13 +20,13 @@ import lombok.Builder.Default;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Message {
-    
+
     @Id
     private UUID id;
 
     @Column(nullable = false)
     @NotEmpty(message = "User can't be empty.")
-    private String user;
+    private String username;
 
     @Column(nullable = false)
     @NotEmpty(message = "Content can't be empty.")
@@ -35,6 +36,6 @@ public class Message {
     private LocalDateTime messageCreationTimestamp = LocalDateTime.now();
 
     @Default
-    private int likeCount = 0;
+    private int likes = 0;
 
 }
