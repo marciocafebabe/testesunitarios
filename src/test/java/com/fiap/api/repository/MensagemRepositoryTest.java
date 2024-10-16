@@ -1,4 +1,4 @@
-package br.com.fiap.api.repository;
+package com.fiap.api.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doNothing;
@@ -16,7 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import br.com.fiap.api.model.Mensagem;
+import com.fiap.api.model.Mensagem;
 
 @ExtendWith(MockitoExtension.class)
 public class MensagemRepositoryTest {

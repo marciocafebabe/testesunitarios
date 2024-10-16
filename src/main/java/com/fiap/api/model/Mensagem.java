@@ -1,4 +1,4 @@
-package br.com.fiap.api.model;
+package com.fiap.api.model;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -32,11 +32,9 @@ public class Mensagem {
     @NotEmpty(message = "Content can't be empty.")
     private String conteudo;
 
-    @Column(nullable = false)
     @Default
     private LocalDateTime dataCriacao = LocalDateTime.now();
 
-    @Column(nullable = false)
     @Default
     private int gostei = 0;
 
