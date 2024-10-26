@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -11,7 +12,6 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.aspectj.bridge.Message;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -108,6 +108,36 @@ class MensagemServiceTest {
         verify(mensagemRepository, times(1)).findById(any(UUID.class));
         verify(mensagemRepository, times(1)).save(any(Mensagem.class));
     }
+    
+    @Test
+    void deveGerarExcecaoAoAlterarMensagemQuandoFalhaNaBusca() {
+        UUID id = UUID.randomUUID();
+        Mensagem mensagem = getMessage();
+        when(mensagemRepository.findById(id)).thenReturn(Optional.empty());
+        assertThatThrownBy( () -> mensagemService.alterarMensagem(id, mensagem))
+                .isInstanceOf(MensagemNotFoundException.class)
+                .hasMessage("Mensagem nao encontrada.");
+        verify(mensagemRepository, times(1)).findById(id);
+        verify(mensagemRepository, never()).save(mensagem);
+    }
+
+    @Test
+    void deveGerarExcecaoAoAlterarMensagemQuandoIdDiferente() {
+        UUID id = UUID.randomUUID();
+        Mensagem mensagemAntiga = getMessage();
+        mensagemAntiga.setId(id);
+        
+        Mensagem mensagemNova = new Mensagem();
+        mensagemNova.setId(UUID.randomUUID());
+        mensagemNova.setConteudo("novo");
+
+        when(mensagemRepository.findById(id)).thenReturn(Optional.of(mensagemAntiga));
+        assertThatThrownBy( () -> mensagemService.alterarMensagem(id, mensagemNova))
+                .isInstanceOf(MensagemNotFoundException.class)
+                .hasMessage("Mensagem atualizada nao apresenta o ID correto.");
+        verify(mensagemRepository, times(1)).findById(id);
+        verify(mensagemRepository, never()).save(mensagemAntiga);
+    }
 
     @Test
     void deveRemoverMensagem() {
@@ -118,6 +148,7 @@ class MensagemServiceTest {
     void deveLancarExcecaoQuandoAlterarMensagem() {
         fail("teste nao implementado");
     }
+
 
     private Mensagem getMessage() {
         return Mensagem.builder()
