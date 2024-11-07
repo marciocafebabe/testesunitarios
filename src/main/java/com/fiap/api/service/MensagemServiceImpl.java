@@ -2,6 +2,8 @@ package com.fiap.api.service;
 
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.fiap.api.exception.MensagemNotFoundException;
@@ -39,7 +41,13 @@ public class MensagemServiceImpl implements MensagemService {
 
     @Override
     public boolean removerMensagem(UUID id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'removerMensagem'");
+        Mensagem mensagem = buscarMensagem(id);
+        mensagemRepository.deleteById(id);
+        return true;
+    }
+
+    @Override
+    public Page<Mensagem> listarMensagens(Pageable pageable) {
+        return mensagemRepository.listarMensagens(pageable);
     }
 }

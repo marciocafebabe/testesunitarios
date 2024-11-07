@@ -100,4 +100,6 @@ public class MensagemRepositoryTest {
             .containsExactlyInAnyOrder(message1, message2);
         verify(messageRepository, times(1)).findAll();
     }
+
+    
 }

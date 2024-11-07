@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -12,10 +13,13 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import com.fiap.api.exception.MensagemNotFoundException;
 import com.fiap.api.model.Mensagem;
@@ -61,7 +65,7 @@ class MensagemServiceTest {
 
     @Test
     void deveBuscarMensagem() {
-        UUID id = UUID.randomUUID();
+        UUID id = UUID.fromString("bd2e7fee-e6d7-43d1-a046-f2592e03e3ae");
         Mensagem mensagem = getMessage();
         mensagem.setId(id);
         when(mensagemRepository.findById(id))
@@ -75,7 +79,7 @@ class MensagemServiceTest {
 
     @Test
     void deveLancarExcecaoQuandoBuscarMensagem() {
-        UUID id = UUID.randomUUID();
+        UUID id = UUID.fromString("b88ae23e-4e79-4f82-b9ff-376e0c2aefc5");
         when(mensagemRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThatThrownBy( () -> mensagemService.buscarMensagem(id))
@@ -86,7 +90,7 @@ class MensagemServiceTest {
 
     @Test
     void deveAlterarMensagem() {
-        UUID id = UUID.randomUUID();
+        UUID id = UUID.fromString("bef59be9-d131-47c7-a7d9-e62ea1fc7971");
         Mensagem mensagemAntiga = getMessage();
         mensagemAntiga.setId(id);
         Mensagem mensagemNova = new Mensagem();
@@ -111,7 +115,7 @@ class MensagemServiceTest {
     
     @Test
     void deveGerarExcecaoAoAlterarMensagemQuandoFalhaNaBusca() {
-        UUID id = UUID.randomUUID();
+        UUID id = UUID.fromString("c139a690-6fc2-45c4-86b9-ad39374c8b4e");
         Mensagem mensagem = getMessage();
         when(mensagemRepository.findById(id)).thenReturn(Optional.empty());
         assertThatThrownBy( () -> mensagemService.alterarMensagem(id, mensagem))
@@ -123,12 +127,13 @@ class MensagemServiceTest {
 
     @Test
     void deveGerarExcecaoAoAlterarMensagemQuandoIdDiferente() {
-        UUID id = UUID.randomUUID();
+        UUID id = UUID.fromString("1d2a63db-356f-4c06-90e8-1d3c2832c7cd");
         Mensagem mensagemAntiga = getMessage();
         mensagemAntiga.setId(id);
         
         Mensagem mensagemNova = new Mensagem();
-        mensagemNova.setId(UUID.randomUUID());
+        mensagemNova.setId(
+                UUID.fromString("2a8c12d5-6577-4fca-b7f2-efad1f77c592"));
         mensagemNova.setConteudo("novo");
 
         when(mensagemRepository.findById(id)).thenReturn(Optional.of(mensagemAntiga));
@@ -141,12 +146,38 @@ class MensagemServiceTest {
 
     @Test
     void deveRemoverMensagem() {
-        fail("teste nao implementado");
+        UUID id = UUID.fromString("4e213700-fead-42f1-b7ce-0cabd6e0be69");
+        Mensagem mensagem = getMessage();
+        mensagem.setId(id);
+        when(mensagemRepository.findById(id))
+                .thenReturn(Optional.of(mensagem));
+        doNothing().when(mensagemRepository).deleteById(id);
+        Boolean mensagemFoiRemovida = mensagemService.removerMensagem(id);
+        assertThat(mensagemFoiRemovida).isTrue();
+        verify(mensagemRepository, times(1)).findById(any(UUID.class));
+        verify(mensagemRepository, times(1)).deleteById(any(UUID.class));
     }
 
     @Test
-    void deveLancarExcecaoQuandoAlterarMensagem() {
-        fail("teste nao implementado");
+    void deveGerarExcecaoAoRemoverMensagemQuandoIdNaoExiste() {
+        UUID id = UUID.fromString("ffcdeaf7-8671-4903-b245-47a0bd1d2ad1");
+        when(mensagemRepository.findById(id)).thenReturn(Optional.empty());
+        
+        assertThatThrownBy( () -> mensagemService.removerMensagem(id))
+                .isInstanceOf(MensagemNotFoundException.class)
+                .hasMessage("Mensagem nao encontrada.");
+                verify(mensagemRepository, times(1)).findById(id);
+                verify(mensagemRepository, never()).deleteById(id);
+    }    
+
+    @Test
+    void deveListarMensagens() {
+        Mensagem message1 = getMessage();
+        Mensagem message2 = getMessage();
+        Page<Mensagem> mensagens = new PageImpl<>(Arrays.asList(
+                message1, 
+                message2
+        ));
     }
 
 
