@@ -12,14 +12,16 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Arrays;
 
-import org.assertj.core.util.Arrays;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import com.fiap.api.exception.MensagemNotFoundException;
 import com.fiap.api.model.Mensagem;
@@ -178,6 +180,21 @@ class MensagemServiceTest {
                 message1, 
                 message2
         ));
+        when(mensagemRepository.listarMensagens(any(Pageable.class)))
+                .thenReturn(mensagens);
+        
+        var resultadoObtido = mensagemService.listarMensagens(Pageable.unpaged());
+
+        assertThat(resultadoObtido).hasSize(2);
+        assertThat(resultadoObtido.getContent())
+                .asInstanceOf(InstanceOfAssertFactories.LIST) 
+                .allSatisfy(mensagem -> {
+                        assertThat(mensagem)
+                                .isNotNull()
+                                .isInstanceOf(Mensagem.class);
+                });
+        verify(mensagemRepository, times(1))
+                .listarMensagens(any(Pageable.class));
     }
 
 
