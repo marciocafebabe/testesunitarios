@@ -1,1 +1,1 @@
-Projeto para estudo de qualidade de software com testes
+Graduate project for application testing practice
